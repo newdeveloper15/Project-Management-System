@@ -1,0 +1,5 @@
+Planning phase status : Complete
+Analysis phase status : Incomplete
+Design phase status : Incomplete
+Implementation phase status : Incomplete
+Maintenance phase status : Incomplete

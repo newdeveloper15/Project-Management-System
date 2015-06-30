@@ -1,0 +1,10 @@
+Project Name LMS
+Project Description Seat Reservation Module 
+Project Start Date 2015/2/2 
+Project End Date 2016/2/2 
+   
+Planning phase duration 2 
+Analysis phase duration 3 
+Design phase duration 5 
+Implementation phase duration 6 
+Maintenance phase duration 3 

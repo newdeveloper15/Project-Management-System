@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1435576239 source:d:\raheel data\code block prog\project management system v1\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<vector>
+	<sstream>
+
