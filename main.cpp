@@ -886,12 +886,21 @@ struct Project
 
         void setProjectName()
         {
-            cout<<"\nProject name : ";
-            //cin >> projectName;
-            cin.ignore();
-            getline(cin, projectName);
+            do
+            {
+                cout<<"\nProject name : ";
+                //cin >> projectName;
+                cin.ignore();
+                getline(cin, projectName);
 
-        }
+                if(projectName == "")
+                {
+                    cout<<"\nProject name can't be null !"<<endl;
+                }
+
+            }while(projectName == "");
+
+        }   //end of setProjectName()
 
         void setProjectName(string pName)
         {
@@ -905,12 +914,19 @@ struct Project
 
         void setProjectDesc()
         {
-            cout<<"Project description : ";
-            //cin >> projectDesc;
-            //cin.ignore();
-            getline(cin, projectDesc);
-            //cin.ignore();
-        }
+            do
+            {
+                cout<<"Project description : ";
+                getline(cin, projectDesc);
+
+                if(projectDesc == "")
+                {
+                    cout<<"\nProject description can't be null !"<<endl;
+                }
+
+            }while(projectDesc == "");
+
+        }   //end of setProjectDesc()
 
         void setProjectDesc(string pDesc)
         {
@@ -932,7 +948,7 @@ struct Project
             proStartDate.setMonth();
             proStartDate.setDate();
 
-        }
+        }   //end of setProStartDate()
 
         //void setProStartDate(string sDate)
         void setProStartDate(int sYear, int sMonth, int sDate)
