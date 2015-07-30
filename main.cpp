@@ -125,8 +125,26 @@ struct FileIO
         return false;
     }
 
+    bool emptyPdFileCheck()
+    {
+        openInProjectFile();
+
+        inProjectDuration.seekg(0, ios::end);
+        size_t size = inProjectDuration.tellg();
+
+        closeInProjectFile();
+
+        if(size == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
 };
 
+/*
 struct FileCRUD
 {
     private:
@@ -135,13 +153,12 @@ struct FileCRUD
         int spaceCount;
         int lineCount;
 
-        //int modifyMenu;
-
-        //string fileData;
-
         string word1, word2, word3, word4;
-        string fileProName;
+        string fileProName; //this variable have to deleted
         string inputProName;
+
+        string fileInput;   //this variable have to deleted
+        string matchInput;
 
         vector<string> fileDataVec = vector<string>();
         bool match;
@@ -155,14 +172,13 @@ struct FileCRUD
             line = "";
             spaceCount = 0;
             lineCount = 0;
-            //modifyMenu = 0;
-
-            //fileData = "";
 
             word1 = word2 = word3 = word4 = "";
             fileProName = "";
             inputProName = "";
             match = false;
+
+            fileInput = matchInput = "";
         }
 
         void writeBack()
@@ -184,143 +200,198 @@ struct FileCRUD
             fileDataVec.resize(0);
         }
 
-        //void modifyPDFile()
-        void modifyProjectName()
+        void modifyPDFile(int menuNo)
         {
-            cout<<"\n\nEnter project name to modify : ";
-            cin.ignore();
-            getline(cin, fileProName);
-
-            f.openInProjectFile();
-
-            if(inProjectDuration.is_open())
+            if(f.emptyPdFileCheck() == false)
             {
-                while(getline(inProjectDuration, line))
+                switch(menuNo)
                 {
-                    lineCount++;
-
-                    for(int i=0; i<line.length(); i++)
+                    case 1:
                     {
-                        if(isspace(line[i]))
-                        {
-                            if(lineCount > 2)
-                                spaceCount++;
-                            else
-                            {
-                                if((lineCount == 1 || lineCount == 2) && spaceCount < 2)
-                                    spaceCount++;
-                            }
-                        }
-
-                        if(spaceCount == 0 && !isspace(line[i]))
-                        {
-                            word1 += line[i];
-                        }
-
-                        if(spaceCount == 1 && !isspace(line[i]))
-                        {
-                            word2 += line[i];
-                        }
-
-                        //if(spaceCount == 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "")) )
-                        //if(lineCount == 1 && spaceCount >= 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "")) )
-                        if(spaceCount == 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "") || (!isspace(line[i]) && word3 != "")) )
-                        {
-                            word3 += line[i];
-//                            if(isspace(line[i]))
-//                                spaceCount--;
-                        }
-
-                        if(spaceCount == 3 && !isspace(line[i]))
-                        {
-                            word4 += line[i];
-                        }
-
-                    }   //end for
-
-                    line = "";
-
-                    cout<<"\nWord3 = " <<word3 <<endl;
-
-                    if(lineCount == 1 && word3 == fileProName)
-                    {
-                        cout<<"\nEnter project name to change : ";
-                        getline(cin, inputProName);
-
-                        line += word1;
-                        line += " ";
-                        line += word2;
-                        line += " ";
-                        line += inputProName;
-
-                        fileDataVec.push_back(line);
-
-                        match = true;
+                        cout<<"\n\nEnter project name to modify : ";
+                        cin.ignore();
+                        getline(cin, fileInput);
                     }
-                    else if(match == true)
+                    break;
+
+                    case 2:
                     {
-                        if(lineCount == 2)
+                        cout<<"\n\nEnter project description to modify : ";
+                        cin.ignore();
+                        getline(cin, fileInput);
+                    }
+                    break;
+
+                    default:
+                    {
+                        cout<<"\nInvalid menu number !"<<endl;
+                    }
+
+                }   //end switch
+
+
+
+
+                f.openInProjectFile();
+
+                if(inProjectDuration.is_open())
+                {
+                    while(getline(inProjectDuration, line))
+                    {
+                        lineCount++;
+
+                        for(int i=0; i<line.length(); i++)
                         {
+                            if(isspace(line[i]))
+                            {
+                                if(lineCount > 2)
+                                    spaceCount++;
+                                else
+                                {
+                                    if((lineCount == 1 || lineCount == 2) && spaceCount < 2)
+                                        spaceCount++;
+                                }
+                            }
+
+                            if(spaceCount == 0 && !isspace(line[i]))
+                            {
+                                word1 += line[i];
+                            }
+
+                            if(spaceCount == 1 && !isspace(line[i]))
+                            {
+                                word2 += line[i];
+                            }
+
+                            if(spaceCount == 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "") || (!isspace(line[i]) && word3 != "")) )
+                            {
+                                word3 += line[i];
+                            }
+
+                            if(spaceCount == 3 && !isspace(line[i]))
+                            {
+                                word4 += line[i];
+                            }
+
+                        }   //end for
+
+                        line = "";
+
+                        cout<<"\nWord3 = " <<word3 <<endl;
+
+                        if(menuNo == 1 && lineCount == 1 && word3 == fileInput)
+                        {
+                            cout<<"\nEnter project name to change : ";
+                            getline(cin, matchInput);
+
                             line += word1;
                             line += " ";
                             line += word2;
                             line += " ";
-                            line += word3;
+                            line += matchInput;
 
                             fileDataVec.push_back(line);
+
+                            match = true;
                         }
-                        else
+                        else if(menuNo == 2 && lineCount == 2 && word3 == fileInput)
                         {
+                            cout<<"\nEnter project description to change : ";
+                            getline(cin, matchInput);
+
                             line += word1;
                             line += " ";
                             line += word2;
                             line += " ";
-                            line += word3;
-                            line += " ";
-                            line += word4;
+                            line += matchInput;
 
-                            fileDataVec.push_back(line);                                }
-                    }
-                    else if(lineCount == 1 && match == false)
+                            fileDataVec.push_back(line);
+
+                            match = true;
+                        }
+                        else if(match == true)
+                        {
+                            if(lineCount == 2)
+                            {
+                                line += word1;
+                                line += " ";
+                                line += word2;
+                                line += " ";
+                                line += word3;
+
+                                fileDataVec.push_back(line);
+                            }
+                            else
+                            {
+                                line += word1;
+                                line += " ";
+                                line += word2;
+                                line += " ";
+                                line += word3;
+                                line += " ";
+                                line += word4;
+
+                                fileDataVec.push_back(line);
+                            }
+                        }
+                        else if(menuNo == 1 && lineCount == 1 && match == false)
+                        {
+                            inProjectDuration.seekg(0, ios::end);   //set read pointer to end of file
+                        }
+                        else if(menuNo == 2 && lineCount == 2 && match == false)
+                        {
+                            inProjectDuration.seekg(0, ios::end);   //set read pointer to end of file
+                        }
+
+
+                        spaceCount = 0;
+                        lineCount = 0;
+                        line = "";
+                        word1 = word2 = word3 = word4 = "";
+
+
+                    }//end while
+
+                    //if(match == true)
+                    if(menuNo == 1 && match == true)
                     {
-                        inProjectDuration.seekg(0, ios::end);   //set read pointer to end of file
+                        cout<<"\n*******************************************************************"<<endl;
+                        cout<<"\nProject name updated !\n"<<endl;
+                        cout<<"*******************************************************************\n"<<endl;
+                    }
+                    if(menuNo == 2 && match == true)
+                    {
+                        cout<<"\n*******************************************************************"<<endl;
+                        cout<<"\nProject description updated !\n"<<endl;
+                        cout<<"*******************************************************************\n"<<endl;
+                    }
+                    else
+                    {
+                        cout<<"\n*******************************************************************"<<endl;
+                        cout<<"\nProject not found !\n"<<endl;
+                        cout<<"*******************************************************************\n"<<endl;
                     }
 
-                    spaceCount = 0;
-                    lineCount = 0;
-                    line = "";
-                    word1 = word2 = word3 = word4 = "";
-
-
-                }//end while
-
-                if(match == true)
-                {
-                    cout<<"\n*******************************************************************"<<endl;
-                    cout<<"\nProject name updated !\n"<<endl;
-                    cout<<"*******************************************************************\n"<<endl;
                 }
                 else
                 {
-                    cout<<"\n*******************************************************************"<<endl;
-                    cout<<"\nProject not found !\n"<<endl;
-                    cout<<"*******************************************************************\n"<<endl;
+                    cout<<"\nUnable to open project details file to modify project name !"<<endl;
                 }
+
+                f.closeInProjectFile();
+
+                writeBack();    //write modified file data back to file
 
             }
             else
             {
-                cout<<"\nUnable to open project details file to modify project name !"<<endl;
+                cout<<"\nProject details file is empty !"<<endl;
             }
 
-            f.closeInProjectFile();
+        }   //end of modifyPDFile()
 
-            writeBack();    //write modified file data back to file
-
-        }   //end of modifyProjectName()
-
-
-};
+};  //end of FileCRUD struct
+*/
 
 struct Account
 {
@@ -560,13 +631,50 @@ struct Date
 
         void setYear()
         {
-            cout<<"\nYear : ";
-            cin >> year;
-
-            if(year < 1000 || year > 9999)
+            do
             {
-                cout<<"\nYear is not valid !"<<endl;
-            }
+                cout<<"\nYear : ";
+                cin >> year;
+
+                if(year < 1000 || year > 9999)
+                {
+                    cout<<"\nYear is not valid !"<<endl;
+                }
+
+            }while(year < 1000 || year > 9999);
+
+        }   //end of setYear()
+
+        void setYear(int newYear)
+        {
+            string strNewYear = "";
+
+            do
+            {
+                if(newYear < 1000 || newYear > 9999)
+                {
+                    //cout<<"\nYear is not valid ! Enter year again : "<<endl;
+                    cout<<"\nYear is not valid ! Enter year again OR Press [ENTER] to unchange : "<<endl;
+                    getline(cin, strNewYear);
+                    //cin >> newYear;
+
+                    if(strNewYear != "")
+                    {
+                        stringstream strToInt(strNewYear);
+                        strToInt >> newYear;
+                    }
+
+                    //year = (newYear < 1000 || newYear > 9999) ? -1 : newYear;
+                    year = (newYear < 1000 || newYear > 9999 && strNewYear == "") ? -1 : newYear;
+                }
+                else
+                {
+                    year = newYear;
+                }
+
+            //}while(newYear < 1000 || newYear > 9999);
+            //}while(newYear < 1000 || newYear > 9999 && strNewYear != "");
+            }while((newYear < 1000 && strNewYear != "") || (newYear > 9999 && strNewYear != ""));
 
         }   //end of setYear()
 
@@ -589,6 +697,36 @@ struct Date
 
         }   //end of setMonth()
 
+        void setMonth(int newMonth)
+        {
+            string strNewMonth = "";
+
+            do
+            {
+                if(newMonth < 1 || newMonth > 12)
+                {
+                    cout<<"\nInvalid month ! Enter month again OR Press [ENTER] to unchange : "<<endl;
+                    //cin >> newMonth;
+                    getline(cin, strNewMonth);
+
+                    if(strNewMonth != "")
+                    {
+                        stringstream strToInt(strNewMonth);
+                        strToInt >> newMonth;
+                    }
+
+                    //month = (newMonth < 1 || newMonth > 12) ? -1 : newMonth;
+                    month = (newMonth < 1 || newMonth > 12 && strNewMonth == "") ? -1 : newMonth;
+                }
+                else
+                    month = newMonth;
+
+            //}while(newMonth < 1 || newMonth > 12);
+            }while((newMonth < 1 && strNewMonth != "") || (newMonth > 12 && strNewMonth != ""));
+
+        }   //end of setMonth()
+
+
         int getMonth()
         {
             return month;
@@ -596,30 +734,40 @@ struct Date
 
         bool validateDate(int date)
         {
-            if(leapYearCheck(year) == false)
+//            cout<<"\nInside validate function : "<<endl;
+//            cout<<"Year = " <<year <<endl;
+//            cout<<"Month = " <<month <<endl;
+//            cout<<"Date = " <<date <<endl;
+
+            if(year != 0 && year != -1 && month != 0 && month != -1)
             {
-                if(month == 1 || month == 3 || month == 5 || month == 7 ||  month == 8 ||  month == 10 || month == 12)
+                if(leapYearCheck(year) == false)
                 {
-                    if(date < 1 || date > 31)
-                        //cout<<"\nInvalid date !"<<endl;
-                        return false;
+                    if(month == 1 || month == 3 || month == 5 || month == 7 ||  month == 8 ||  month == 10 || month == 12)
+                    {
+                        if(date < 1 || date > 31)
+                            //cout<<"\nInvalid date !"<<endl;
+                            return false;
+                    }
+                }
+                else
+                {
+                    if(month == 2 || month == 4 || month == 6 || month == 9 ||  month == 11)
+                    {
+                        if(date < 1 || date > 30)
+                            //cout<<"\nInvalid date !"<<endl;
+                            return false;
+                    }
+                    else if(month == 2)
+                    {
+                        if(date < 1 || date > 29)
+                            //cout<<"\nInvalid date"<<endl;
+                            return false;
+                    }
                 }
             }
             else
-            {
-                if(month == 2 || month == 4 || month == 6 || month == 9 ||  month == 11)
-                {
-                    if(date < 1 || date > 30)
-                        //cout<<"\nInvalid date !"<<endl;
-                        return false;
-                }
-                else if(month == 2)
-                {
-                    if(date < 1 || date > 29)
-                        //cout<<"\nInvalid date"<<endl;
-                        return false;
-                }
-            }
+                return false;
 
             return true;
 
@@ -640,6 +788,72 @@ struct Date
             cout<<""<<endl;
 
         }   //end of setDate()
+
+        void setDate(int newDate)
+        {
+            //cout<<"\n\nValidate date function value : " <<validateDate(newDate) <<endl;
+            string strNewDate = "";
+
+            do
+            {
+                //if(validateDate(newDate) == false && (year == 0 || year == -1 || month == 0 || month == -1))
+                if(year == 0 || year == -1 || month == 0 || month == -1)
+                {
+                    if(newDate >= 1 && newDate <= 31)
+                    {
+                        date = newDate;
+                        strNewDate = "";
+                    }
+                    else
+                    {
+                        cout<<"\nInvalid date ! Enter date again OR Press [ENTER] to unchange : "<<endl;
+                        //cin >> newDate;
+                        getline(cin, strNewDate);
+
+                        if(strNewDate != "")
+                        {
+                            stringstream strToInt(strNewDate);
+                            strToInt >> newDate;
+                        }
+                        else
+                            strNewDate = "";
+
+                        //date = (validateDate(newDate)) ? newDate : -1;
+                        //date = (validateDate(newDate) && strNewDate != "") ? newDate : -1;
+                        date = (newDate >= 1 && newDate <= 31) ? newDate : -1;
+
+                    }
+                }
+                //else if(validateDate(newDate) == false && (year != 0 && year != -1 && month != 0 && month != -1))
+                else if(validateDate(newDate) == false)
+                {
+                    cout<<"\nInvalid date ! Enter date again OR Press [ENTER] to unchange : "<<endl;
+                    //cin >> newDate;
+                    getline(cin, strNewDate);
+
+                    if(strNewDate != "")
+                    {
+                        stringstream strToInt(strNewDate);
+                        strToInt >> newDate;
+                    }
+                    else
+                        strNewDate = "";
+
+                    //date = (validateDate(newDate)) ? newDate : -1;
+                    date = (validateDate(newDate) && strNewDate != "") ? newDate : -1;
+
+                }
+                /**no need of else may be**/
+//                else
+//                    date = newDate;
+
+            //}while(validateDate(newDate) == false);
+            }while(validateDate(newDate) == false && strNewDate != "");
+
+            cout<<""<<endl;
+
+        }   //end of setDate()
+
 
         int getDate()
         {
@@ -720,9 +934,13 @@ struct Project
 
         }
 
-        void setProStartDate(string sDate)
+        //void setProStartDate(string sDate)
+        void setProStartDate(int sYear, int sMonth, int sDate)
         {
-            startDate = sDate;
+            //startDate = sDate;
+            proStartDate.setYear(sYear);
+            proStartDate.setMonth(sMonth);
+            proStartDate.setDate(sDate);
         }
 
 //        string getProStartDate()
@@ -763,9 +981,13 @@ struct Project
             proEndDate.setDate();
         }
 
-        void setProEndDate(string eDate)
+        //void setProEndDate(string eDate)
+        void setProEndDate(int eYear, int eMonth, int eDate)
         {
-            endDate = eDate;
+            //endDate = eDate;
+            proEndDate.setYear(eYear);
+            proEndDate.setMonth(eMonth);
+            proEndDate.setDate(eDate);
         }
 
 //        string getProEndDate()
@@ -828,7 +1050,8 @@ struct Phases
         int planningDuration, analysisDuration, designDuration, implementationDuration,
         maintenanceDuration;
 
-        int durationUnit;
+        //int durationUnit;
+        string durationUnit;
 
     public:
 
@@ -843,11 +1066,13 @@ struct Phases
             designDuration = 0;
             implementationDuration = 0;
             maintenanceDuration = 0;
-            durationUnit = 0;
+            //durationUnit = 0;
+            durationUnit = "";
         }
 
         //parameterized constructor
-        Phases(int p, int a, int d, int i, int m, int du)
+        //Phases(int p, int a, int d, int i, int m, int du)
+        Phases(int p, int a, int d, int i, int m, string du)
         {
             planningDuration = p;
             analysisDuration = a;
@@ -859,14 +1084,66 @@ struct Phases
 
         void setPlanning()
         {
-            cout<<"\nEnter planning phase duration : ";
-            cin >> planningDuration;
+            do
+            {
+                cout<<"\nEnter planning phase duration : ";
+                cin >> planningDuration;
+
+                if(planningDuration == 0)
+                    cout<<"\nPlanning phase duration can't be zero !"<<endl;
+                else if(planningDuration < 0)
+                    cout<<"\nPlanning phase duration can't be negative !"<<endl;
+
+            }while(planningDuration <= 0);
         }
 
+        /**Overloaded function setPlanning() is only used in modifyPDFile()**/
         void setPlanning(int p)
         {
-            planningDuration = p;
-        }
+            string strDuration = "";
+
+            do
+            {
+                //if(planningDuration == 0)
+                if(p == 0)
+                {
+                    cout<<"\nPlanning phase duration can't be zero !"<<endl;
+                    cout<<"Enter again or Press [ENTER] to unchange : ";
+                    //cin >> p;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> p;
+                    }
+
+                    //planningDuration = (planningDuration <= 0 ) ? -1 : p;
+                    planningDuration = (p <= 0 && strDuration == "") ? -2147483648 : p;
+                }
+                //else if(planningDuration < 0)
+                else if(p < 0)
+                {
+                    cout<<"\nPlanning phase duration can't be negative !"<<endl;
+                    cout<<"Enter again or Press [ENTER] to unchange : ";
+                    //cin >> p;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> p;
+                    }
+                    //planningDuration = (planningDuration <= 0 ) ? -1 : p;
+                    planningDuration = (p <= 0  && strDuration == "") ? -2147483648 : p;
+                }
+                else
+                    planningDuration = p;
+
+            //}while(planningDuration <= 0);
+            }while(p <= 0 && planningDuration != -2147483648);
+
+        }   //end of setPlanning()
 
         int getPlanning()
         {
@@ -875,14 +1152,66 @@ struct Phases
 
         void setAnalysis()
         {
-            cout<<"Enter analysis phase duration : ";
-            cin >> analysisDuration;
+            do
+            {
+                cout<<"Enter analysis phase duration : ";
+                cin >> analysisDuration;
+
+                if(planningDuration == 0)
+                    cout<<"\nAnalysis phase duration can't be zero !"<<endl;
+                else if(planningDuration < 0)
+                    cout<<"\nAnalysis phase duration can't be negative !"<<endl;
+
+            }while(planningDuration <= 0);
         }
 
+        /**Overloaded function setAnalysis() is only used in modifyPDFile()**/
         void setAnalysis(int a)
         {
-            analysisDuration = a;
-        }
+            string strDuration = "";
+            do
+            {
+                //if(analysisDuration == 0)
+                if(a == 0)
+                {
+                    cout<<"\nAnalysis phase duration can't be zero !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> a;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> a;
+                    }
+
+                    //analysisDuration = (analysisDuration <= 0 ) ? -1 : a;
+                    analysisDuration = (a <= 0 && strDuration == "") ? -2147483648 : a;
+                }
+                //else if(analysisDuration < 0)
+                else if(a < 0)
+                {
+                    cout<<"\nAnalysis phase duration can't be negative !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> a;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> a;
+                    }
+
+                    //analysisDuration = (analysisDuration <= 0 ) ? -1 : a;
+                    analysisDuration = (a <= 0 && strDuration == "") ? -2147483648 : a;
+                }
+                else
+                    analysisDuration = a;
+
+            //}while(analysisDuration <= 0);
+            }while(a <= 0 && analysisDuration != -2147483648);
+
+        }   //end of setAnalysis()
 
         int getAnalysis()
         {
@@ -891,14 +1220,65 @@ struct Phases
 
         void setDesign()
         {
-            cout<<"Enter design phase duration : ";
-            cin >> designDuration;
+            do
+            {
+                cout<<"Enter design phase duration : ";
+                cin >> designDuration;
+
+                if(designDuration == 0)
+                    cout<<"\nDesign phase duration can't be zero !"<<endl;
+                else if(designDuration < 0)
+                    cout<<"\nDesign phase duration can't be negative !"<<endl;
+
+            }while(designDuration <= 0);
         }
 
         void setDesign(int d)
         {
-            designDuration = d;
-        }
+            string strDuration = "";
+            do
+            {
+                //if(designDuration == 0)
+                if(d == 0)
+                {
+                    cout<<"\nDesign phase duration can't be zero !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> d;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> d;
+                    }
+
+                    //designDuration = (designDuration <= 0 ) ? -1 : d;
+                    designDuration = (d <= 0  && strDuration == "") ? -2147483648 : d;
+                }
+                //else if(designDuration < 0)
+                else if(d < 0)
+                {
+                    cout<<"\nDesign phase duration can't be negative !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> d;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> d;
+                    }
+
+                    //designDuration = (designDuration <= 0 ) ? -1 : d;
+                    designDuration = (d <= 0  && strDuration == "") ? -2147483648 : d;
+                }
+                else
+                    designDuration  = d;
+
+            //}while(designDuration <= 0);
+            }while(d <= 0 && designDuration != -2147483648);
+
+        }   //end of setDesign()
 
         int getDesign()
         {
@@ -907,14 +1287,66 @@ struct Phases
 
         void setImplementation()
         {
-            cout<<"Enter implementation phase duration : ";
-            cin >> implementationDuration;
+            do
+            {
+                cout<<"Enter implementation phase duration : ";
+                cin >> implementationDuration;
+
+                if(implementationDuration == 0)
+                    cout<<"\nImplementation phase duration can't be zero !"<<endl;
+                else if(implementationDuration < 0)
+                    cout<<"\nImplementation phase duration can't be negative !"<<endl;
+
+            }while(implementationDuration <= 0);
         }
 
         void setImplementation(int i)
         {
-            implementationDuration = i;
-        }
+            string strDuration = "";
+
+            do
+            {
+                //if(implementationDuration == 0)
+                if(i == 0)
+                {
+                    cout<<"\nImplementation phase duration can't be zero !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> i;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> i;
+                    }
+
+                    //implementationDuration = (implementationDuration <= 0 ) ? -1 : i;
+                    implementationDuration = (i <= 0 && strDuration == "") ? -2147483648 : i;
+                }
+                //else if(implementationDuration < 0)
+                else if(i < 0)
+                {
+                    cout<<"\nImplementation phase duration can't be negative !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> i;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> i;
+                    }
+
+                    //implementationDuration = (implementationDuration <= 0 ) ? -1 : i;
+                    implementationDuration = (i <= 0 && strDuration == "") ? -2147483648 : i;
+                }
+                else
+                    implementationDuration = i;
+
+            //}while(implementationDuration <= 0);
+            }while(i <= 0 && implementationDuration != -2147483648);
+
+        }   //end of setImplementation()
 
         int getImplementation()
         {
@@ -923,14 +1355,67 @@ struct Phases
 
         void setMaintenance()
         {
-            cout<<"Enter maintenance phase duration : ";
-            cin >> maintenanceDuration;
-        }
+            do
+            {
+                cout<<"Enter maintenance phase duration : ";
+                cin >> maintenanceDuration;
+
+                if(maintenanceDuration == 0)
+                    cout<<"\nMaintenance phase duration can't be zero !"<<endl;
+                else if(maintenanceDuration < 0)
+                    cout<<"\nMaintenance phase duration can't be negative !"<<endl;
+
+            }while(maintenanceDuration <= 0);
+
+        }   //end of setMaintenance()
 
         void setMaintenance(int m)
         {
-            maintenanceDuration = m;
-        }
+            string strDuration = "";
+
+            do
+            {
+                //if(maintenanceDuration == 0)
+                if(m == 0)
+                {
+                    cout<<"\nMaintenance phase duration can't be zero !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> m;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> m;
+                    }
+
+                    //maintenanceDuration = (maintenanceDuration <= 0 ) ? -1 : m;
+                    maintenanceDuration = (m <= 0  && strDuration == "") ? -2147483648 : m;
+                }
+                //else if(maintenanceDuration < 0)
+                else if(m < 0)
+                {
+                    cout<<"\nMaintenance phase duration can't be negative !"<<endl;
+                    cout<<"Enter again OR Press [ENTER] to unchange : ";
+                    //cin >> m;
+                    getline(cin, strDuration);
+
+                    if(strDuration != "")
+                    {
+                        stringstream strToInt(strDuration);
+                        strToInt >> m;
+                    }
+
+                    //maintenanceDuration = (maintenanceDuration <= 0 ) ? -1 : m;
+                    maintenanceDuration = (m <= 0  && strDuration == "") ? -2147483648 : m;
+                }
+                else
+                    maintenanceDuration = m;
+
+            //}while(maintenanceDuration <= 0);
+            }while(m <= 0 && maintenanceDuration != -2147483648);
+
+        }   //end of setMaintenance()
 
         int getMaintenance()
         {
@@ -939,16 +1424,49 @@ struct Phases
 
         void setDurationUnit()
         {
-            cout<<"Enter duration unit : ";
-            cin >> durationUnit;
+            do
+            {
+                cout<<"Enter duration unit : ";
+                cin >> durationUnit;
+
+                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
+                {
+                    cout<<"\nInvalid duration unit !"<<endl;
+                }
+
+            }while(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years");
         }
 
-        void setDurationUnit(int du)
+        //void setDurationUnit(int du)
+        void setDurationUnit(string du)
         {
-            durationUnit = du;
-        }
+            do
+            {
+                //if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
+                if(du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years")
+                {
+                    cout<<"\nInvalid duration unit !"<<endl;
+                    cout<<"Enter duration unit again OR Press [ENTER] to unchange : ";
+                    cin >> du;
 
-        int getDurationUnit()
+                    if(du == "")
+                    {
+                        du = "blank";
+                    }
+
+                    //(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years") ? "" : du;
+                    durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && du != "blank") ? "" : du;
+                }
+                else
+                    durationUnit = du;
+
+            //}while(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years");
+            }while(du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && durationUnit != "blank");
+
+        }   //end of setDurationUnit()
+
+        //int getDurationUnit()
+        string getDurationUnit()
         {
             return durationUnit;
         }
@@ -1003,8 +1521,987 @@ struct Phases
 
             file.closeOutProjectFile();
 
+        }   //end of writeAllDurations()
+
+};  //end of Phases struct
+
+struct FileCRUD
+{
+    private:
+
+        //string searchInput;
+        string modifiedInput;
+
+        string line;
+        string word1, word2, word3, word4;
+        int lineCount;
+        int spaceCount;
+
+        string modifiedYear, modifiedMonth, modifiedDate;
+        int intModYear, intModMonth, intModDate;
+        int intPhasesDuration;
+
+        vector<string> fileDataVec = vector<string>();
+
+        FileIO fileIO;
+        Project pdObject;
+        Phases phasesObject;
+
+        Date startDate;
+        Date endDate;
+
+    public:
+
+        FileCRUD()
+        {
+            modifiedInput = "";
+            line = "";
+            word1 = word2 = word3 = word4 = "";
+            lineCount = spaceCount = 0;
+
+            modifiedYear = modifiedMonth = modifiedDate = "";
+            intModYear = intModMonth = intModDate = 0;
+            intPhasesDuration = 0;
         }
-};
+
+        void searchPDFile(int searchMenu)
+        {
+            if(fileIO.emptyPdFileCheck() == false)
+            {
+                lineCount = 0;
+                line = "";
+
+                fileIO.openInProjectFile();
+
+                while(getline(inProjectDuration, line))
+                {
+                    lineCount++;
+
+                    if(searchMenu == 1 && lineCount == 1)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 2 && lineCount == 2)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 3 && lineCount == 3)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 4 && lineCount == 4)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 5 && lineCount == 6)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 6 && lineCount == 7)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 7 && lineCount == 8)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 8 && lineCount == 9)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 9 && lineCount == 10)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+
+                    line = "";
+
+                }   //end while
+
+                fileIO.closeInProjectFile();
+            }
+            else
+            {
+                cout<<"\nProject Details file is empty !"<<endl;
+            }
+
+        }   //end of searchPDFile()
+
+        void modifyProName()
+        {
+            cout<<"Enter new project name or press [ENTER] to unchange : ";
+            cin.ignore();
+            getline(cin, modifiedInput);
+
+            if(modifiedInput != "")
+            {
+                pdObject.setProjectName(modifiedInput);
+
+                //line = word1 +" " +word2 +" " +modifiedInput;
+                line = word1 +" " +word2 +" " +pdObject.getProjectName();
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyProName()
+
+        void modifyProDesc()
+        {
+            cout<<"Enter new project description or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            if(modifiedInput != "")
+            {
+                pdObject.setProjectDesc(modifiedInput);
+
+                //line = word1 +" " +word2 +" " +modifiedInput;
+                line = word1 +" " +word2 +" " +pdObject.getProjectDesc();
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyProDesc()
+
+        void modifyProStartDate()
+        {
+            cout<<"\nEnter new project start date : ";
+
+            cout<<"\nNew year or press [ENTER] to unchange : ";
+            getline(cin, modifiedYear);
+
+            if(modifiedYear != "")
+            {
+                stringstream strToInt1(modifiedYear);
+                strToInt1 >> intModYear;
+
+                startDate.setYear(intModYear);
+            }
+
+            cout<<"New month or press [ENTER] to unchange : ";
+            getline(cin, modifiedMonth);
+
+            if(modifiedMonth != "")
+            {
+                stringstream strToInt2(modifiedMonth);
+                strToInt2 >> intModMonth;
+
+                startDate.setMonth(intModMonth);
+            }
+
+            cout<<"New date or press [ENTER] to unchange : ";
+            getline(cin, modifiedDate);
+
+            //if(modifiedMonth != "")
+            if(modifiedDate != "")
+            {
+                stringstream strToInt3(modifiedDate);
+                strToInt3 >> intModDate;
+
+                startDate.setDate(intModDate);
+            }
+
+            //if(modifiedInput != "")
+            //if(modifiedYear != "" && modifiedMonth != "" && modifiedDate != "")
+            if((modifiedYear != "" && startDate.getYear() != -1) && (modifiedMonth != "" && startDate.getMonth() != -1) && (modifiedDate != "" && startDate.getDate() != -1))
+            {
+                //string to integer conversion
+//                stringstream strToInt1(modifiedYear);
+//                strToInt1 >> intModYear;
+//
+//                stringstream strToInt2(modifiedMonth);
+//                strToInt2 >> intModMonth;
+//
+//                stringstream strToInt3(modifiedDate);
+//                strToInt3 >> intModDate;
+
+                //pdObject.setProStartDate(intModYear, intModMonth, intModDate);
+                //following statement is for test purpose
+                pdObject.setProStartDate(startDate.getYear(), startDate.getMonth(), startDate.getDate());
+
+                //line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                line = word1 +" " +word2 +" " +word3 +" " +pdObject.getProStartDate();
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                cout<<"\nProject start date not modified because one of the date field is left blank !"<<endl;
+
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyProStartDate()
+
+        void modifyProEndDate()
+        {
+            cout<<"\nEnter new project end date : ";
+
+            cout<<"\nNew year or press [ENTER] to unchange : ";
+            getline(cin, modifiedYear);
+
+            if(modifiedYear != "")
+            {
+                stringstream strToInt1(modifiedYear);
+                strToInt1 >> intModYear;
+
+                endDate.setYear(intModYear);
+            }
+
+            cout<<"New month or press [ENTER] to unchange : ";
+            getline(cin, modifiedMonth);
+
+            if(modifiedMonth != "")
+            {
+                stringstream strToInt2(modifiedMonth);
+                strToInt2 >> intModMonth;
+
+                endDate.setMonth(intModMonth);
+            }
+
+            cout<<"New date or press [ENTER] to unchange : ";
+            getline(cin, modifiedDate);
+
+            //if(modifiedMonth != "")
+            if(modifiedDate != "")
+            {
+                stringstream strToInt3(modifiedDate);
+                strToInt3 >> intModDate;
+
+                endDate.setDate(intModDate);
+            }
+
+            //if(modifiedInput != "")
+            //if(modifiedYear != "" && modifiedMonth != "" && modifiedDate != "")
+            if((modifiedYear != "" && endDate.getYear() != -1) && (modifiedMonth != "" && endDate.getMonth() != -1) && (modifiedDate != "" && endDate.getDate() != -1))
+            {
+                //string to integer conversion
+//                stringstream strToInt1(modifiedYear);
+//                strToInt1 >> intModYear;
+//
+//                stringstream strToInt2(modifiedMonth);
+//                strToInt2 >> intModMonth;
+//
+//                stringstream strToInt3(modifiedDate);
+//                strToInt3 >> intModDate;
+
+                //pdObject.setProStartDate(intModYear, intModMonth, intModDate);
+                //following statement is for test purpose
+                pdObject.setProEndDate(endDate.getYear(), endDate.getMonth(), endDate.getDate());
+
+                //line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                line = word1 +" " +word2 +" " +word3 +" " +pdObject.getProEndDate();
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                cout<<"\nProject end date not modified because one of the date field is left blank !"<<endl;
+
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyProEndDate()
+
+        void modifyPlaninningPhaseDuration()
+        {
+            cout<<"\nEnter new Planning Phase duration or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            stringstream strToInt(modifiedInput);
+            strToInt >> intPhasesDuration;
+
+            phasesObject.setPlanning(intPhasesDuration);
+
+            //if(modifiedInput != "")
+            if(modifiedInput != "" && phasesObject.getPlanning() != -2147483648)
+            {
+//                stringstream strToInt(modifiedInput);
+//                strToInt >> intPhasesDuration;
+//
+//                phasesObject.setPlanning(intPhasesDuration);
+
+                stringstream intToStr;
+                intToStr << phasesObject.getPlanning();
+
+                modifiedInput = intToStr.str();
+
+                line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyPlaninningPhaseDuration()
+
+        void modifyAnalysisPhaseDuration()
+        {
+            cout<<"\nEnter new Analysis Phase duration or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            stringstream strToInt(modifiedInput);
+            strToInt >> intPhasesDuration;
+
+            phasesObject.setAnalysis(intPhasesDuration);
+
+            //if(modifiedInput != "")
+            if(modifiedInput != "" && phasesObject.getAnalysis() != -2147483648)
+            {
+//                stringstream strToInt(modifiedInput);
+//                strToInt >> intPhasesDuration;
+//
+//                phasesObject.setAnalysis(intPhasesDuration);
+
+                stringstream intToStr;
+                intToStr << phasesObject.getAnalysis();
+
+                modifiedInput = intToStr.str();
+
+                line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyAnalysisPhaseDuration()
+
+        void modifyDesignPhaseDuration()
+        {
+            cout<<"\nEnter new Design Phase duration or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            stringstream strToInt(modifiedInput);
+            strToInt >> intPhasesDuration;
+
+            phasesObject.setDesign(intPhasesDuration);
+
+            //if(modifiedInput != "")
+            if(modifiedInput != "" && phasesObject.getDesign() != -2147483648)
+            {
+//                stringstream strToInt(modifiedInput);
+//                strToInt >> intPhasesDuration;
+//
+//                phasesObject.setDesign(intPhasesDuration);
+
+                stringstream intToStr;
+                intToStr << phasesObject.getDesign();
+
+                modifiedInput = intToStr.str();
+
+                line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyDesignPhaseDuration()
+
+        void modifyImplementationPhaseDuration()
+        {
+            cout<<"\nEnter new Implementation Phase duration or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            stringstream strToInt(modifiedInput);
+            strToInt >> intPhasesDuration;
+
+            phasesObject.setImplementation(intPhasesDuration);
+
+            //if(modifiedInput != "")
+            if(modifiedInput != "" && phasesObject.getImplementation() != -2147483648)
+            {
+//                stringstream strToInt(modifiedInput);
+//                strToInt >> intPhasesDuration;
+//
+//                phasesObject.setImplementation(intPhasesDuration);
+
+                stringstream intToStr;
+                intToStr << phasesObject.getImplementation();
+
+                modifiedInput = intToStr.str();
+
+                line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyImplementationPhaseDuration()
+
+        void modifyMaintenancePhaseDuration()
+        {
+            cout<<"\nEnter new Maintenance Phase duration or press [ENTER] to unchange : ";
+            //cin.ignore();
+            getline(cin, modifiedInput);
+
+            stringstream strToInt(modifiedInput);
+            strToInt >> intPhasesDuration;
+
+            phasesObject.setMaintenance(intPhasesDuration);
+
+            //if(modifiedInput != "")
+            if(modifiedInput != "" && phasesObject.getMaintenance() != -2147483648)
+            {
+//                stringstream strToInt(modifiedInput);
+//                strToInt >> intPhasesDuration;
+//
+//                phasesObject.setMaintenance(intPhasesDuration);
+
+                stringstream intToStr;
+                intToStr << phasesObject.getMaintenance();
+
+                modifiedInput = intToStr.str();
+
+                line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3 +" " +word4;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of modifyMaintenancePhaseDuration()
+
+        void modifyDurationUnit()
+        {
+            cout<<"\nEnter new duration unit or press [ENTER] to unchange : ";
+            getline(cin, modifiedInput);
+
+            phasesObject.setDurationUnit(modifiedInput);
+
+            if(modifiedInput != "" && phasesObject.getDurationUnit() != "blank")
+            {
+                line = word1 +" " +word2 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of  modifyDurationUnit()
+
+        //void modificationInput()
+        void modificationInput(int lineCount)
+        {
+//            string modifiedYear, modifiedMonth, modifiedDate;
+//            int intModYear, intModMonth, intModDate;
+//            int intPhasesDuration;
+            line = "";
+
+            switch(lineCount)
+            {
+                case 1:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyProName();
+
+//                        cout<<"Enter new project name or press [ENTER] to unchange : ";
+//                        cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            pdObject.setProjectName(modifiedInput);
+//
+//                            //line = word1 +" " +word2 +" " +modifiedInput;
+//                            line = word1 +" " +word2 +" " +pdObject.getProjectName();
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 2:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyProDesc();
+
+//                        cout<<"Enter new project description or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            pdObject.setProjectDesc(modifiedInput);
+//
+//                            //line = word1 +" " +word2 +" " +modifiedInput;
+//                            line = word1 +" " +word2 +" " +pdObject.getProjectDesc();
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 3:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyProStartDate();
+
+//                        cout<<"\nEnter new project start date : ";
+//
+//                        cout<<"\nNew year or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedYear);
+//                        cout<<"New month or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedMonth);
+//                        cout<<"New date or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedDate);
+//
+//                        //if(modifiedInput != "")
+//                        if(modifiedYear != "" && modifiedMonth != "" && modifiedDate != "")
+//                        {
+//                            //string to integer conversion
+//                            stringstream strToInt1(modifiedYear);
+//                            strToInt1 >> intModYear;
+//
+//                            stringstream strToInt2(modifiedMonth);
+//                            strToInt2 >> intModMonth;
+//
+//                            stringstream strToInt3(modifiedDate);
+//                            strToInt3 >> intModDate;
+//
+//                            pdObject.setProStartDate(intModYear, intModMonth, intModDate);
+//
+//                            //line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            line = word1 +" " +word2 +" " +word3 +" " +pdObject.getProStartDate();
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 4:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyProEndDate();
+
+//                        cout<<"\nEnter new project end date : ";
+//
+//                        cout<<"\nNew year or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedYear);
+//                        cout<<"New month or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedMonth);
+//                        cout<<"New date or press [ENTER] to unchange : ";
+//                        getline(cin, modifiedDate);
+//
+//                        //if(modifiedInput != "")
+//                        if(modifiedYear != "" && modifiedMonth != "" && modifiedDate != "")
+//                        {
+//                            //string to integer conversion
+//                            stringstream strToInt1(modifiedYear);
+//                            strToInt1 >> intModYear;
+//
+//                            stringstream strToInt2(modifiedMonth);
+//                            strToInt2 >> intModMonth;
+//
+//                            stringstream strToInt3(modifiedDate);
+//                            strToInt3 >> intModDate;
+//
+//                            pdObject.setProEndDate(intModYear, intModMonth, intModDate);
+//
+//                            //line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            line = word1 +" " +word2 +" " +word3 +" " +pdObject.getProEndDate();
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 5:
+                {
+                    if(word1 == "" && word2 == "" && word3 == "")   //blank line
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 6:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyPlaninningPhaseDuration();
+
+//                        cout<<"\nEnter new Planning Phase duration or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            stringstream strToInt(modifiedInput);
+//                            strToInt >> intPhasesDuration;
+//
+//                            phasesObject.setPlanning(intPhasesDuration);
+//
+//                            stringstream intToStr;
+//                            intToStr << phasesObject.getPlanning();
+//
+//                            modifiedInput = intToStr.str();
+//
+//                            line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 7:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyAnalysisPhaseDuration();
+
+//                        cout<<"\nEnter new Analysis Phase duration or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            stringstream strToInt(modifiedInput);
+//                            strToInt >> intPhasesDuration;
+//
+//                            phasesObject.setAnalysis(intPhasesDuration);
+//
+//                            stringstream intToStr;
+//                            intToStr << phasesObject.getAnalysis();
+//
+//                            modifiedInput = intToStr.str();
+//
+//                            line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 8:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyDesignPhaseDuration();
+
+//                        cout<<"\nEnter new Design Phase duration or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            stringstream strToInt(modifiedInput);
+//                            strToInt >> intPhasesDuration;
+//
+//                            phasesObject.setDesign(intPhasesDuration);
+//
+//                            stringstream intToStr;
+//                            intToStr << phasesObject.getDesign();
+//
+//                            modifiedInput = intToStr.str();
+//
+//                            line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 9:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyImplementationPhaseDuration();
+
+//                        cout<<"\nEnter new Implementation Phase duration or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            stringstream strToInt(modifiedInput);
+//                            strToInt >> intPhasesDuration;
+//
+//                            phasesObject.setImplementation(intPhasesDuration);
+//
+//                            stringstream intToStr;
+//                            intToStr << phasesObject.getImplementation();
+//
+//                            modifiedInput = intToStr.str();
+//
+//                            line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 10:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
+                        modifyMaintenancePhaseDuration();
+
+//                        cout<<"\nEnter new Maintenance Phase duration or press [ENTER] to unchange : ";
+//                        //cin.ignore();
+//                        getline(cin, modifiedInput);
+//
+//                        if(modifiedInput != "")
+//                        {
+//                            stringstream strToInt(modifiedInput);
+//                            strToInt >> intPhasesDuration;
+//
+//                            phasesObject.setMaintenance(intPhasesDuration);
+//
+//                            stringstream intToStr;
+//                            intToStr << phasesObject.getMaintenance();
+//
+//                            modifiedInput = intToStr.str();
+//
+//                            line = word1 +" " +word2 +" " +word3 +" " +modifiedInput;
+//                            fileDataVec.push_back(line);
+//                        }
+//                        else
+//                        {
+//                            line = word1 +" " +word2 +" " +word3 +" " +word4;
+//                            fileDataVec.push_back(line);
+//                        }
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                default:
+                {
+                    cout<<"\nInvalid line number to modify Project Details file data !"<<endl;
+                }
+
+            }   //end switch
+
+        }   //end of modificationInput()
+
+        void modifyPDFile()
+        {
+            if(fileIO.emptyPdFileCheck() == false)
+            {
+                lineCount = spaceCount = 0;
+                line = word1 = word2 = word3 = word4 = "";
+
+                fileIO.openInProjectFile();
+
+                while(getline(inProjectDuration, line))
+                {
+                    lineCount++;
+
+                    for(int i=0; i<line.length(); i++)
+                    {
+                        if(isspace(line[i]))
+                        {
+                            if(lineCount > 2)
+                                spaceCount++;
+                            else
+                            {
+                                if((lineCount == 1 || lineCount == 2) && spaceCount < 2)
+                                    spaceCount++;
+                            }
+                        }
+
+    //                    if((lineCount == 1 || lineCount == 2) && spaceCount <= 2 && isspace(line[i]))
+    //                    {
+    //                        spaceCount++;
+    //                    }
+    //                    else if(lineCount > 2 && isspace(line[i]))
+    //                    {
+    //                        spaceCount++;
+    //                    }
+
+                        if(spaceCount == 0 && !isspace(line[i]))
+                        {
+                            word1 += line[i];
+                        }
+
+                        if(spaceCount == 1 && !isspace(line[i]))
+                        {
+                            word2 += line[i];
+                        }
+
+                        if(lineCount == 1 || lineCount == 2)
+                        {
+                            //if(lineCount == 1 && spaceCount == 2 && !isspace(line[i]))
+                            if(spaceCount == 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "") || (!isspace(line[i]) && word3 != "")) )
+                            {
+                                word3 += line[i];
+                            }
+                        }
+                        else
+                        {
+                            if(spaceCount == 2 && !isspace(line[i]))
+                            {
+                                word3 += line[i];
+                            }
+
+                            if(spaceCount == 3 && !isspace(line[i]))
+                            {
+                                word4 += line[i];
+                            }
+                        }
+
+
+                    }   //end for
+
+                    modificationInput(lineCount);   //get input for modification and store result in fileDataVec vector
+
+                    word1 = word2 = word3 = word4 = line = "";
+                    spaceCount = 0;
+
+                }   //end while
+
+                fileIO.closeInProjectFile();
+
+                writeBack();
+
+                if(fileIO.emptyPdFileCheck() == false)
+                {
+                    cout<<"\nProject details file modified successfuly !"<<endl;
+                    cout<<"All records are saved\n"<<endl;
+                }
+
+                fileDataVec.clear();    //remove all elements from fileDataVec vector
+            }
+            else
+            {
+                cout<<"\nProject Details file is empty !"<<endl;
+            }
+
+        }   //end of modifyPDFile()
+
+        void writeBack()
+        {
+            fileIO.openOutProjectFile();
+
+            if(outProjectDuration.is_open())
+            {
+                for(int i=0; i<fileDataVec.size(); i++)
+                    outProjectDuration<<fileDataVec[i] <<"\n";
+            }
+            else
+            {
+                cout<<"\nUnable to open project details file to write back file data after modification !"<<endl;
+            }
+
+            fileIO.closeOutProjectFile();
+        }
+
+};  //end of FileCRUD struct
 
 struct GanttChart
 {
@@ -1335,6 +2832,7 @@ int main()
     int menuOption;
     int projectMenu;
     int modifyMenu;
+    int searchFileMenu;
     //char repeat;
 
 
@@ -1407,11 +2905,15 @@ int main()
 
                             case 5:
                             {
-                                cout<<"\nPress 1 to modify Project Name"<<endl;
-                                cout<<"Press 2 to modify Project Description"<<endl;
-                                cout<<"Press 3 to modify Project Start Date"<<endl;
-                                cout<<"Press 4 to modify Project End Date"<<endl;
-                                cout<<"Press 5 to modify Project Phase"<<endl;
+//                                cout<<"\nPress 1 to modify Project Name"<<endl;
+//                                cout<<"Press 2 to modify Project Description"<<endl;
+//                                cout<<"Press 3 to modify Project Start Date"<<endl;
+//                                cout<<"Press 4 to modify Project End Date"<<endl;
+//                                cout<<"Press 5 to modify Project Phase"<<endl;
+
+                                cout<<"\nPress 1 to modify Project details file"<<endl;
+                                cout<<"Press 2 to search Project details file"<<endl;
+                                cout<<"Press 3 to delete content from Project details file"<<endl;
 
                                 cin >> modifyMenu;
 
@@ -1419,12 +2921,27 @@ int main()
                                 {
                                     case 1:
                                     {
-                                        fc.modifyProjectName();
+                                        //fc.modifyProjectName();
+                                        //fc.modifyPDFile(modifyMenu);
+                                        fc.modifyPDFile();
                                     }
                                     break;
 
                                     case 2:
                                     {
+                                        cout<<"\nPress 1 to search Project Name"<<endl;
+                                        cout<<"Press 2 to search Project Description"<<endl;
+                                        cout<<"Press 3 to search Project Start Date"<<endl;
+                                        cout<<"Press 4 to search Project End Date"<<endl;
+                                        cout<<"Press 5 to search Planning Phase Duration"<<endl;
+                                        cout<<"Press 6 to search Analysis Phase Duration"<<endl;
+                                        cout<<"Press 7 to search Design Phase Duration"<<endl;
+                                        cout<<"Press 8 to search Implementation Phase Duration"<<endl;
+                                        cout<<"Press 9 to search Maintenance Phase Duration"<<endl;
+
+                                        cin >> searchFileMenu;
+
+                                        fc.searchPDFile(searchFileMenu);
 
                                     }
                                     break;
