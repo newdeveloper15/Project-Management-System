@@ -1883,12 +1883,22 @@ struct FileCRUD
 
             //phasesObject.setDurationUnit(modifiedInput);
 
-            if(modifiedInput != "" && phasesObject.getDurationUnit() != "blank")
+            //if(modifiedInput != "" && phasesObject.getDurationUnit() != "blank")
+            if(modifiedInput != "")
             {
                 phasesObject.setDurationUnit(modifiedInput);
 
-                line = word1 +" " +word2 +" " +modifiedInput;
-                fileDataVec.push_back(line);
+                if(phasesObject.getDurationUnit() != "blank")
+                {
+                    //line = word1 +" " +word2 +" " +modifiedInput;
+                    line = word1 +" " +word2 +" " +phasesObject.getDurationUnit();
+                    fileDataVec.push_back(line);
+                }
+                else
+                {
+                    line = word1 +" " +word2 +" " +word3;
+                    fileDataVec.push_back(line);
+                }
             }
             else
             {
@@ -2506,6 +2516,9 @@ struct FileCRUD
 
         void modifyPDFile()
         {
+            bool isModified = false;
+            string line = "";   //note line variable is declared local to check modification
+
             if(fileIO.emptyPdFileCheck() == false)
             {
                 lineCount = spaceCount = 0;
@@ -2578,6 +2591,11 @@ struct FileCRUD
 
                     modificationInput(lineCount);   //get input for modification and store result in fileDataVec vector
 
+                    if(line != "" && line != fileDataVec[lineCount-1])
+                    {
+                        isModified = true;
+                    }
+
                     word1 = word2 = word3 = word4 = line = "";
                     spaceCount = 0;
 
@@ -2585,12 +2603,21 @@ struct FileCRUD
 
                 fileIO.closeInProjectFile();
 
+                //cout<<"\n\nVector size : " <<fileDataVec.size() <<endl;
+
                 writeBack();
 
                 if(fileIO.emptyPdFileCheck() == false)
                 {
-                    cout<<"\nProject details file modified successfuly !"<<endl;
-                    cout<<"All records are saved\n"<<endl;
+                    if(isModified == true)
+                    {
+                        cout<<"\nProject details file modified successfuly !"<<endl;
+                        cout<<"All records are saved\n"<<endl;
+                    }
+                    else
+                    {
+                        cout<<"\nNo modification is made. File remain unchanged !"<<endl;
+                    }
                 }
 
                 fileDataVec.clear();    //remove all elements from fileDataVec vector
