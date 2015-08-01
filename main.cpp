@@ -716,7 +716,7 @@ struct Date
                     }
 
                     //month = (newMonth < 1 || newMonth > 12) ? -1 : newMonth;
-                    month = (newMonth < 1 || newMonth > 12 && strNewMonth == "") ? -1 : newMonth;
+                    month = ((newMonth < 1 || newMonth > 12) && strNewMonth == "") ? -1 : newMonth;
                 }
                 else
                     month = newMonth;
@@ -1057,7 +1057,8 @@ struct Project
             return true;
 
         }   //end of validatProDate()
-};
+
+};  //end of Project struct
 
 struct Phases
 {
@@ -1249,6 +1250,7 @@ struct Phases
             }while(designDuration <= 0);
         }
 
+        /**Overloaded function setDesign() is only used in modifyPDFile()**/
         void setDesign(int d)
         {
             string strDuration = "";
@@ -1316,6 +1318,7 @@ struct Phases
             }while(implementationDuration <= 0);
         }
 
+        /**Overloaded function setImplementation() is only used in modifyPDFile()**/
         void setImplementation(int i)
         {
             string strDuration = "";
@@ -1385,6 +1388,7 @@ struct Phases
 
         }   //end of setMaintenance()
 
+        /**Overloaded function setMaintenance() is only used in modifyPDFile()**/
         void setMaintenance(int m)
         {
             string strDuration = "";
@@ -1445,21 +1449,42 @@ struct Phases
                 cout<<"Enter duration unit : ";
                 cin >> durationUnit;
 
-                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
+//                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
+                if(
+                   durationUnit != "hours" && durationUnit != "days" &&
+                   durationUnit != "weeks" && durationUnit != "months" &&
+                   durationUnit != "years" &&
+                   durationUnit != "Hours" && durationUnit != "Days" &&
+                   durationUnit != "Weeks" && durationUnit != "Months" &&
+                   durationUnit != "Years"
+                   )
                 {
                     cout<<"\nInvalid duration unit !"<<endl;
                 }
+//            }while(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years");
+            }while(
 
-            }while(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years");
-        }
+                   durationUnit != "hours" && durationUnit != "days" &&
+                   durationUnit != "weeks" && durationUnit != "months" &&
+                   durationUnit != "years" &&
+                   durationUnit != "Hours" && durationUnit != "Days" &&
+                   durationUnit != "Weeks" && durationUnit != "Months" &&
+                   durationUnit != "Years"
+
+                   );//end while
+
+        }   //end of setDurationUnit()
 
         //void setDurationUnit(int du)
         void setDurationUnit(string du)
         {
             do
             {
-                //if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
-                if(du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years")
+//                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
+                if(du != "hours" && du != "days" && du != "weeks" && du != "months" &&
+                   du != "years" && du != "Hours" && du != "Days" && du != "Weeks" &&
+                   du != "Months" && du != "Years"
+                   )
                 {
                     cout<<"\nInvalid duration unit !"<<endl;
                     cout<<"Enter duration unit again OR Press [ENTER] to unchange : ";
@@ -1472,12 +1497,20 @@ struct Phases
 
                     //(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years") ? "" : du;
                     durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && du != "blank") ? "" : du;
+//                    durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" &&
+//                    du != "years" && du != "Hours" && du != "Days" && du != "Weeks" &&
+//                    du != "Months" && du != "Years" && du != "blank") ? "" : du;
                 }
                 else
                     durationUnit = du;
 
             //}while(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years");
-            }while(du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && durationUnit != "blank");
+            //}while(du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && durationUnit != "blank");
+            }while(
+                  du != "hours" && du != "days" && du != "weeks" && du != "months"
+                  && du != "years" && du != "Hours" && du != "Days" && du != "Weeks"
+                  && du != "Months" && du != "Years" && durationUnit != "blank"
+                  );
 
         }   //end of setDurationUnit()
 
@@ -1508,6 +1541,9 @@ struct Phases
 
             }while(project.validateProDate() == false);
 
+            //duration unit(new added)
+            setDurationUnit();
+
             //set project milestones duration
             setPlanning();
             setAnalysis();
@@ -1523,6 +1559,8 @@ struct Phases
                 outProjectDuration<<"Project Description "<<project.getProjectDesc() <<"\n";
                 outProjectDuration<<"Project Start Date "<<project.getProStartDate() <<"\n";
                 outProjectDuration<<"Project End Date "<<project.getProEndDate() <<"\n\n";
+
+                outProjectDuration<<"Duration unit (hours/days/weeks/months/years) "<<getDurationUnit() <<"\n\n";   //newly added
 
                 outProjectDuration<<"Planning phase duration " <<getPlanning() <<"\n";
                 outProjectDuration<<"Analysis phase duration " <<getAnalysis() <<"\n";
@@ -2525,6 +2563,7 @@ struct GanttChart
 
         string duration;
         int intDuration;
+        string durationUnit;
 
         vector<int> phasesDurationVec = vector<int>();
 
@@ -2539,6 +2578,7 @@ struct GanttChart
         {
             duration = "";
             intDuration = 0;
+            durationUnit = "";
 
             lineCount = 0;
             spaceCount = 0;
@@ -2559,7 +2599,8 @@ struct GanttChart
                     lineCount++;
 
                     //if(lineCount >= 4)
-                    if(lineCount >= 6)
+                    //if(lineCount >= 6)
+                    if(lineCount >= 8)
                     {
                         for(int i=0; i<line.length(); i++)
                         {
@@ -2589,20 +2630,76 @@ struct GanttChart
             }
             else
             {
-                cout<<"\nUnable to open input project duration file !"<<endl;
+                cout<<"\nUnable to open input project duration file to read milestone durations !"<<endl;
             }
 
             file.closeInProjectFile();
-        }
+
+        }   //end of readMileStoneDurations()
+
+        /**readDurationUnit() function reads only duration unit
+        from "projectDetails.txt" file**/
+        void readDurationUnit()
+        {
+            lineCount = 0;
+            spaceCount = 0;
+            line = "";
+
+            file.openInProjectFile();
+
+            if(inProjectDuration.is_open())
+            {
+                while(getline(inProjectDuration, line))
+                {
+                    lineCount++;
+
+                    if(lineCount == 6)
+                    {
+                        for(int i=0; i<line.length(); i++)
+                        {
+                            if(isspace(line[i]))
+                                spaceCount++;
+
+                            if(spaceCount == 2 && !isspace(line[i]))
+                                durationUnit += line[i];
+
+                        }//end for
+
+                        lineCount = 0;
+                        spaceCount = 0;
+                        line = "";
+
+                        inProjectDuration.seekg(0, ios::end);    //set read pointer to eof
+
+                    }//end if
+
+                }//end while
+            }
+            else
+            {
+                cout<<"\nUnable to open input project duration file to read duration unit !"<<endl;
+            }
+
+            file.closeInProjectFile();
+
+        }   //end of readDurationUnit()
+
+        string getDU()
+        {
+            return durationUnit;
+
+        }   //end of getDurationUnit()
 
         void printGanttChart()
         {
             readMileStoneDurations();
+            readDurationUnit();
 
             cout<<"\n\n*****************************************************"<<endl;
 
             cout<<"\nProject duration gantt chart"<<endl;
-            cout<<"Duration unit : Week\n\n"<<endl;
+            //cout<<"Duration unit : Week\n\n"<<endl;
+            cout<<"Duration unit : " <<getDU() <<"\n\n" <<endl;
 
 //            for(int i=0; i<phasesDurationVec.size(); i++)
 //                cout<<phasesDurationVec.at(i) <<" ";
@@ -2629,8 +2726,10 @@ struct GanttChart
             cout<<"\n\n*****************************************************\n"<<endl;
 
             //phasesDurationVec.resize(0);
-        }
-};
+
+        }   //end of printGanttChart()
+
+};  //end of GanttChart struct
 
 struct ProjectStatus
 {
@@ -2833,7 +2932,8 @@ struct ProjectStatus
             }
 
         }   //end of printProjectStatus()
-};
+
+};  //end of ProjectStatus
 
 int main()
 {
@@ -2884,7 +2984,7 @@ int main()
 
                     do{
                         cout<<"\nPress 1 to set project milestones duration"<<endl;
-                        cout<<"\nPress 2 to enter to update project status"<<endl;
+                        cout<<"\nPress 2 to update project status"<<endl;
                         cout<<"\nPress 3 to print project Gantt Chart"<<endl;
                         cout<<"\nPress 4 to print project status"<<endl;
                         cout<<"\nPress 5 to go to file CRUD operations menu"<<endl;
@@ -2921,12 +3021,6 @@ int main()
 
                             case 5:
                             {
-//                                cout<<"\nPress 1 to modify Project Name"<<endl;
-//                                cout<<"Press 2 to modify Project Description"<<endl;
-//                                cout<<"Press 3 to modify Project Start Date"<<endl;
-//                                cout<<"Press 4 to modify Project End Date"<<endl;
-//                                cout<<"Press 5 to modify Project Phase"<<endl;
-
                                 cout<<"\nPress 1 to modify Project details file"<<endl;
                                 cout<<"Press 2 to search Project details file"<<endl;
                                 cout<<"Press 3 to delete content from Project details file"<<endl;
