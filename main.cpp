@@ -1447,7 +1447,8 @@ struct Phases
             do
             {
                 cout<<"Enter duration unit : ";
-                cin >> durationUnit;
+                //cin >> durationUnit;
+                getline(cin, durationUnit);
 
 //                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
                 if(
@@ -1488,7 +1489,8 @@ struct Phases
                 {
                     cout<<"\nInvalid duration unit !"<<endl;
                     cout<<"Enter duration unit again OR Press [ENTER] to unchange : ";
-                    cin >> du;
+                    //cin >> du;
+                    getline(cin, du);
 
                     if(du == "")
                     {
@@ -1496,10 +1498,10 @@ struct Phases
                     }
 
                     //(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years") ? "" : du;
-                    durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && du != "blank") ? "" : du;
-//                    durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" &&
-//                    du != "years" && du != "Hours" && du != "Days" && du != "Weeks" &&
-//                    du != "Months" && du != "Years" && du != "blank") ? "" : du;
+                    //durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" && du != "years" && du != "blank") ? "" : du;
+                    durationUnit = (du != "hours" && du != "days" && du != "weeks" && du != "months" &&
+                    du != "years" && du != "Hours" && du != "Days" && du != "Weeks" &&
+                    du != "Months" && du != "Years" && du != "blank") ? "" : du;
                 }
                 else
                     durationUnit = du;
@@ -1874,16 +1876,44 @@ struct FileCRUD
 
         }   //end of modifyProEndDate()
 
+        void modifyDurationUnit()
+        {
+            cout<<"\nEnter new duration unit or press [ENTER] to unchange : ";
+            getline(cin, modifiedInput);
+
+            //phasesObject.setDurationUnit(modifiedInput);
+
+            if(modifiedInput != "" && phasesObject.getDurationUnit() != "blank")
+            {
+                phasesObject.setDurationUnit(modifiedInput);
+
+                line = word1 +" " +word2 +" " +modifiedInput;
+                fileDataVec.push_back(line);
+            }
+            else
+            {
+                line = word1 +" " +word2 +" " +word3;
+                fileDataVec.push_back(line);
+            }
+
+        }   //end of  modifyDurationUnit()
+
         void modifyPlaninningPhaseDuration()
         {
             cout<<"\nEnter new Planning Phase duration or press [ENTER] to unchange : ";
             //cin.ignore();
             getline(cin, modifiedInput);
 
-            stringstream strToInt(modifiedInput);
-            strToInt >> intPhasesDuration;
+            /**This check prevents to pass 0 as argument to setPlanning() on null input,
+            because null input convert to 0 in int.
+            **/
+            if(modifiedInput != "")
+            {
+                stringstream strToInt(modifiedInput);
+                strToInt >> intPhasesDuration;
 
-            phasesObject.setPlanning(intPhasesDuration);
+                phasesObject.setPlanning(intPhasesDuration);
+            }
 
             //if(modifiedInput != "")
             if(modifiedInput != "" && phasesObject.getPlanning() != -2147483648)
@@ -1915,10 +1945,16 @@ struct FileCRUD
             //cin.ignore();
             getline(cin, modifiedInput);
 
-            stringstream strToInt(modifiedInput);
-            strToInt >> intPhasesDuration;
+            /**This check prevents to pass 0 as argument to setAnalysis() on null input,
+            because null input convert to 0 in int.
+            **/
+            if(modifiedInput != "")
+            {
+                stringstream strToInt(modifiedInput);
+                strToInt >> intPhasesDuration;
 
-            phasesObject.setAnalysis(intPhasesDuration);
+                phasesObject.setAnalysis(intPhasesDuration);
+            }
 
             //if(modifiedInput != "")
             if(modifiedInput != "" && phasesObject.getAnalysis() != -2147483648)
@@ -1950,10 +1986,16 @@ struct FileCRUD
             //cin.ignore();
             getline(cin, modifiedInput);
 
-            stringstream strToInt(modifiedInput);
-            strToInt >> intPhasesDuration;
+            /**This check prevents to pass 0 as argument to setDesign() on null input,
+            because null input convert to 0 in int.
+            **/
+            if(modifiedInput != "")
+            {
+                stringstream strToInt(modifiedInput);
+                strToInt >> intPhasesDuration;
 
-            phasesObject.setDesign(intPhasesDuration);
+                phasesObject.setDesign(intPhasesDuration);
+            }
 
             //if(modifiedInput != "")
             if(modifiedInput != "" && phasesObject.getDesign() != -2147483648)
@@ -1985,10 +2027,16 @@ struct FileCRUD
             //cin.ignore();
             getline(cin, modifiedInput);
 
-            stringstream strToInt(modifiedInput);
-            strToInt >> intPhasesDuration;
+            /**This check prevents to pass 0 as argument to setImplementation() on null input,
+            because null input convert to 0 in int.
+            **/
+            if(modifiedInput != "")
+            {
+                stringstream strToInt(modifiedInput);
+                strToInt >> intPhasesDuration;
 
-            phasesObject.setImplementation(intPhasesDuration);
+                phasesObject.setImplementation(intPhasesDuration);
+            }
 
             //if(modifiedInput != "")
             if(modifiedInput != "" && phasesObject.getImplementation() != -2147483648)
@@ -2020,10 +2068,16 @@ struct FileCRUD
             //cin.ignore();
             getline(cin, modifiedInput);
 
-            stringstream strToInt(modifiedInput);
-            strToInt >> intPhasesDuration;
+            /**This check prevents to pass 0 as argument to setMaintenance() on null input,
+            because null input convert to 0 in int.
+            **/
+            if(modifiedInput != "")
+            {
+                stringstream strToInt(modifiedInput);
+                strToInt >> intPhasesDuration;
 
-            phasesObject.setMaintenance(intPhasesDuration);
+                phasesObject.setMaintenance(intPhasesDuration);
+            }
 
             //if(modifiedInput != "")
             if(modifiedInput != "" && phasesObject.getMaintenance() != -2147483648)
@@ -2048,26 +2102,6 @@ struct FileCRUD
             }
 
         }   //end of modifyMaintenancePhaseDuration()
-
-        void modifyDurationUnit()
-        {
-            cout<<"\nEnter new duration unit or press [ENTER] to unchange : ";
-            getline(cin, modifiedInput);
-
-            phasesObject.setDurationUnit(modifiedInput);
-
-            if(modifiedInput != "" && phasesObject.getDurationUnit() != "blank")
-            {
-                line = word1 +" " +word2 +" " +modifiedInput;
-                fileDataVec.push_back(line);
-            }
-            else
-            {
-                line = word1 +" " +word2 +" " +word3;
-                fileDataVec.push_back(line);
-            }
-
-        }   //end of  modifyDurationUnit()
 
         //void modificationInput()
         void modificationInput(int lineCount)
@@ -2248,6 +2282,29 @@ struct FileCRUD
                 {
                     if(word1 != "" && word2 != "" && word3 != "")   //not blank line
                     {
+                        modifyDurationUnit();
+                    }
+                    else
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                case 7:
+                {
+                    if(word1 == "" && word2 == "" && word3 == "")   //blank line
+                    {
+                        fileDataVec.push_back("");
+                    }
+                }
+                break;
+
+                //case 6:
+                case 8:
+                {
+                    if(word1 != "" && word2 != "" && word3 != "")   //not blank line
+                    {
                         modifyPlaninningPhaseDuration();
 
 //                        cout<<"\nEnter new Planning Phase duration or press [ENTER] to unchange : ";
@@ -2282,7 +2339,8 @@ struct FileCRUD
                 }
                 break;
 
-                case 7:
+                //case 7:
+                case 9:
                 {
                     if(word1 != "" && word2 != "" && word3 != "")   //not blank line
                     {
@@ -2320,7 +2378,8 @@ struct FileCRUD
                 }
                 break;
 
-                case 8:
+                //case 8:
+                case 10:
                 {
                     if(word1 != "" && word2 != "" && word3 != "")   //not blank line
                     {
@@ -2358,7 +2417,8 @@ struct FileCRUD
                 }
                 break;
 
-                case 9:
+                //case 9:
+                case 11:
                 {
                     if(word1 != "" && word2 != "" && word3 != "")   //not blank line
                     {
@@ -2396,7 +2456,8 @@ struct FileCRUD
                 }
                 break;
 
-                case 10:
+                //case 10:
+                case 12:
                 {
                     if(word1 != "" && word2 != "" && word3 != "")   //not blank line
                     {
@@ -2460,11 +2521,13 @@ struct FileCRUD
                     {
                         if(isspace(line[i]))
                         {
-                            if(lineCount > 2)
+                            //if(lineCount > 2)
+                            if(lineCount > 2 && lineCount != 6)
                                 spaceCount++;
                             else
                             {
-                                if((lineCount == 1 || lineCount == 2) && spaceCount < 2)
+                                //if((lineCount == 1 || lineCount == 2) && spaceCount < 2)
+                                if((lineCount == 1 || lineCount == 2 || lineCount == 6) && spaceCount < 2)
                                     spaceCount++;
                             }
                         }
@@ -2488,7 +2551,8 @@ struct FileCRUD
                             word2 += line[i];
                         }
 
-                        if(lineCount == 1 || lineCount == 2)
+                        //if(lineCount == 1 || lineCount == 2)
+                        if(lineCount == 1 || lineCount == 2 || lineCount == 6)
                         {
                             //if(lineCount == 1 && spaceCount == 2 && !isspace(line[i]))
                             if(spaceCount == 2 && ((!isspace(line[i]) && word3 == "") ||  (isspace(line[i]) && word3 != "") || (!isspace(line[i]) && word3 != "")) )
@@ -2540,7 +2604,7 @@ struct FileCRUD
 
         void writeBack()
         {
-            fileIO.openOutProjectFile();
+            fileIO.openOutProjectFile();    //open in trunc mode
 
             if(outProjectDuration.is_open())
             {
