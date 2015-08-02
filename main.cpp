@@ -1589,7 +1589,7 @@ struct FileCRUD
 {
     private:
 
-        //string searchInput;
+        string searchInput; //use in delPDFileContent() function
         string modifiedInput;
 
         string line;
@@ -1622,6 +1622,8 @@ struct FileCRUD
             modifiedYear = modifiedMonth = modifiedDate = "";
             intModYear = intModMonth = intModDate = 0;
             intPhasesDuration = 0;
+
+            searchInput = "";
         }
 
         void searchPDFile(int searchMenu)
@@ -1629,7 +1631,10 @@ struct FileCRUD
             if(fileIO.emptyPdFileCheck() == false)
             {
                 lineCount = 0;
+                spaceCount = 0;
                 line = "";
+
+                word1 = word2 = word3 = "";
 
                 fileIO.openInProjectFile();
 
@@ -1637,62 +1642,98 @@ struct FileCRUD
                 {
                     lineCount++;
 
-                    if(searchMenu == 1 && lineCount == 1)
+                    for(int i=0; i<line.length(); i++)
+                    {
+                        if(isspace(line[i]))
+                        {
+                            spaceCount++;
+                        }
+
+                        if(spaceCount == 0 && !isspace(line[i]))
+                        {
+                            word1 += line[i];
+                        }
+
+                        if(spaceCount == 1 && !isspace(line[i]))
+                        {
+                            word2 += line[i];
+                        }
+
+                        if(spaceCount == 2 && !isspace(line[i]))
+                        {
+                            word3 += line[i];
+                        }
+
+                    }//end for
+
+                    //if(searchMenu == 1 && lineCount == 1)
+                    if(searchMenu == 1 && word1 == "Project" && word2 == "Name")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 2 && lineCount == 2)
+                    //else if(searchMenu == 2 && lineCount == 2)
+                    else if(searchMenu == 2 && word1 == "Project" && word2 == "Description")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 3 && lineCount == 3)
+                    //else if(searchMenu == 3 && lineCount == 3)
+                    else if(searchMenu == 3 && word1 == "Project" && word2 == "Start" && word3 == "Date")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 4 && lineCount == 4)
+                    //else if(searchMenu == 4 && lineCount == 4)
+                    else if(searchMenu == 4 && word1 == "Project" && word2 == "End" && word3 == "Date")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 5 && lineCount == 6)
+                    //else if(searchMenu == 5 && lineCount == 6)
+                    else if(searchMenu == 5 && word1 == "Duration" && word2 == "unit")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
                     //else if(searchMenu == 6 && lineCount == 7)
-                    else if(searchMenu == 6 && lineCount == 8)
+                    //else if(searchMenu == 6 && lineCount == 8)
+                    else if(searchMenu == 6 && word1 == "Planning" && word2 == "phase" && word3 == "duration")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
                     //else if(searchMenu == 7 && lineCount == 8)
-                    else if(searchMenu == 7 && lineCount == 9)
+                    //else if(searchMenu == 7 && lineCount == 9)
+                    else if(searchMenu == 7 && word1 == "Analysis" && word2 == "phase" && word3 == "duration")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
                     //else if(searchMenu == 8 && lineCount == 9)
-                    else if(searchMenu == 8 && lineCount == 10)
+                    //else if(searchMenu == 8 && lineCount == 10)
+                    else if(searchMenu == 8 && word1 == "Design" && word2 == "phase" && word3 == "duration")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
                     //else if(searchMenu == 9 && lineCount == 10)
-                    else if(searchMenu == 9 && lineCount == 11)
+                    //else if(searchMenu == 9 && lineCount == 11)
+                    else if(searchMenu == 9 && word1 == "Implementation" && word2 == "phase" && word3 == "duration")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 10 && lineCount == 12)
+                    //else if(searchMenu == 10 && lineCount == 12)
+                    else if(searchMenu == 10 && word1 == "Maintenance" && word2 == "phase" && word3 == "duration")
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
 
                     line = "";
+                    word1 = word2 = word3 = "";
+                    spaceCount = 0;
 
                 }   //end while
 
@@ -2653,11 +2694,112 @@ struct FileCRUD
             }
             else
             {
-                cout<<"\nUnable to open project details file to write back file data after modification !"<<endl;
+                cout<<"\nUnable to open project details file to write back file data after modification/deletion !"<<endl;
             }
 
             fileIO.closeOutProjectFile();
+
+        }   //end of writeBack()
+
+    bool searchKeyInLine(string input, string line)
+    {
+        int charCounter = 0;
+        int i, j;
+        i = j = 0;
+
+        while(j < line.length())
+        {
+            if(input[i] == line[j])
+            {
+                if(charCounter < input.length())
+                    charCounter++;
+
+                if(i < input.length()-1)
+                    i++;
+
+                j++;
+            }
+            else if(input[i] != line[j] && charCounter == input.length())
+            {
+                j = line.length();
+            }
+            else
+            {
+                //reset counter
+                charCounter = 0;
+                i = 0;
+
+                j++;
+            }
+
+        }//end while
+
+        if(charCounter == input.length())
+            return true;
+
+        return false;
+
+    }   //end of searchFileLine()
+
+    void delPDFileContent()
+    {
+        line = "";
+        bool inputMatch = false;
+
+        if(fileIO.emptyPdFileCheck() == false)
+        {
+            cout<<"\nWhat you want to delete from file : ";
+            cin.ignore();
+            getline(cin, searchInput);
+
+            fileIO.openInProjectFile();
+
+            if(inProjectDuration.is_open())
+            {
+                while(getline(inProjectDuration, line))
+                {
+                    if(searchKeyInLine(searchInput, line) == false)
+                    {
+                        fileDataVec.push_back(line);
+                    }
+                    else if(searchKeyInLine(searchInput, line) == true && inputMatch == true)
+                    {
+                        /**if second match is found it did not have to skip to save in vector**/
+                        fileDataVec.push_back(line);
+                    }
+                    else
+                    {
+                        inputMatch = true;
+
+                    }
+                }
+            }
+            else
+            {
+                cout<<"\nUnable to open project details file !"<<endl;
+            }
+
+            fileIO.closeInProjectFile();
+
         }
+        else
+        {
+            cout<<"\nProject details file is empty !"<<endl;
+        }
+
+        if(inputMatch == false)
+        {
+            fileDataVec.clear();
+            cout<<"\nRecord not found in file !"<<endl;
+        }
+        else
+        {
+            writeBack();
+
+            cout<<"\nRecord deleted from file !"<<endl;
+        }
+
+    }   //end of delPDFileContent()
 
 };  //end of FileCRUD struct
 
@@ -3158,6 +3300,12 @@ int main()
 
                                         fc.searchPDFile(searchFileMenu);
 
+                                    }
+                                    break;
+
+                                    case 3:
+                                    {
+                                        fc.delPDFileContent();
                                     }
                                     break;
 
