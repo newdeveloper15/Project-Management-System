@@ -1446,8 +1446,9 @@ struct Phases
         {
             do
             {
-                cout<<"Enter duration unit : ";
+                cout<<"Enter duration unit (hours/days/weeks/months/years) : ";
                 //cin >> durationUnit;
+                cin.ignore();
                 getline(cin, durationUnit);
 
 //                if(durationUnit != "hours" && durationUnit != "days" && durationUnit != "weeks" && durationUnit != "months" && durationUnit != "years")
@@ -1562,13 +1563,16 @@ struct Phases
                 outProjectDuration<<"Project Start Date "<<project.getProStartDate() <<"\n";
                 outProjectDuration<<"Project End Date "<<project.getProEndDate() <<"\n\n";
 
-                outProjectDuration<<"Duration unit (hours/days/weeks/months/years) "<<getDurationUnit() <<"\n\n";   //newly added
+                //outProjectDuration<<"Duration unit (hours/days/weeks/months/years) "<<getDurationUnit() <<"\n\n";   //newly added
+                outProjectDuration<<"Duration unit "<<getDurationUnit() <<"\n\n";   //newly added
 
                 outProjectDuration<<"Planning phase duration " <<getPlanning() <<"\n";
                 outProjectDuration<<"Analysis phase duration " <<getAnalysis() <<"\n";
                 outProjectDuration<<"Design phase duration " <<getDesign() <<"\n";
                 outProjectDuration<<"Implementation phase duration " <<getImplementation() <<"\n";
                 outProjectDuration<<"Maintenance phase duration " <<getMaintenance() <<"\n";
+
+                cout<<"\nProject details sucssessfuly saved to file !"<<endl;
             }
             else
             {
@@ -1658,22 +1662,31 @@ struct FileCRUD
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 6 && lineCount == 7)
+                    //else if(searchMenu == 6 && lineCount == 7)
+                    else if(searchMenu == 6 && lineCount == 8)
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 7 && lineCount == 8)
+                    //else if(searchMenu == 7 && lineCount == 8)
+                    else if(searchMenu == 7 && lineCount == 9)
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 8 && lineCount == 9)
+                    //else if(searchMenu == 8 && lineCount == 9)
+                    else if(searchMenu == 8 && lineCount == 10)
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
                     }
-                    else if(searchMenu == 9 && lineCount == 10)
+                    //else if(searchMenu == 9 && lineCount == 10)
+                    else if(searchMenu == 9 && lineCount == 11)
+                    {
+                        cout<<"\n" <<line <<endl;
+                        inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
+                    }
+                    else if(searchMenu == 10 && lineCount == 12)
                     {
                         cout<<"\n" <<line <<endl;
                         inProjectDuration.seekg(0, ios::end);   //set file read pointer to end of file
@@ -3134,11 +3147,12 @@ int main()
                                         cout<<"Press 2 to search Project Description"<<endl;
                                         cout<<"Press 3 to search Project Start Date"<<endl;
                                         cout<<"Press 4 to search Project End Date"<<endl;
-                                        cout<<"Press 5 to search Planning Phase Duration"<<endl;
-                                        cout<<"Press 6 to search Analysis Phase Duration"<<endl;
-                                        cout<<"Press 7 to search Design Phase Duration"<<endl;
-                                        cout<<"Press 8 to search Implementation Phase Duration"<<endl;
-                                        cout<<"Press 9 to search Maintenance Phase Duration"<<endl;
+                                        cout<<"Press 5 to search Duration Unit"<<endl;
+                                        cout<<"Press 6 to search Planning Phase Duration"<<endl;
+                                        cout<<"Press 7 to search Analysis Phase Duration"<<endl;
+                                        cout<<"Press 8 to search Design Phase Duration"<<endl;
+                                        cout<<"Press 9 to search Implementation Phase Duration"<<endl;
+                                        cout<<"Press 10 to search Maintenance Phase Duration"<<endl;
 
                                         cin >> searchFileMenu;
 
